@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_htmlnode(self):
@@ -110,6 +110,42 @@ class TestHTMLNode(unittest.TestCase):
         self.assertEqual(
             node.__repr__(),
             "LeafNode(None, plain text, None)"
+        )
+
+    def test_parentnode(self):
+        node = ParentNode(
+            'p',
+            [
+                LeafNode("b", "Bold text"),
+                LeafNode(None, "Normal text"),
+                LeafNode("i", "italic text"),
+                LeafNode(None, "Normal text"),
+            ]
+        )
+        self.assertEqual(
+            node.to_html(),
+            "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
+        )
+
+    def test_parentnod_grandchildren(self):
+        grandchild_node = LeafNode("i", "Grandchild node")
+        child_node = ParentNode("span", [grandchild_node])
+        parent_node = ParentNode("div", [child_node])
+        self.assertEqual(
+            parent_node.to_html(),
+            "<div><span><i>Grandchild node</i></span></div>"
+        )
+
+    def test_parentnode_repr(self):
+        node = ParentNode(
+            'p',
+            [
+                LeafNode("b", "Bold text")
+            ]
+        )
+        self.assertEqual(
+            node.__repr__(),
+            "ParentNode(p, children: [LeafNode(b, Bold text, None)], None)"
         )
         
 
