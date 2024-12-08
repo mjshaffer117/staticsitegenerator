@@ -2,7 +2,7 @@ import unittest
 
 from textnode import TextNode, TextType
 
-from inline_markdown import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 
 class TestInlineMarkdown(unittest.TestCase):
     def test_delimiter_bold(self):
@@ -49,6 +49,46 @@ class TestInlineMarkdown(unittest.TestCase):
         node = TextNode("This is `text", TextType.TEXT)
         with self.assertRaises(ValueError):
             split_nodes_delimiter([node], "`", TextType.CODE)
+
+    # TEST IMAGES #
+    def test_extract_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertListEqual(
+            extract_markdown_images(text),
+            [
+                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
+            ]
+        )
+
+    def test_no_image(self):
+        text = "This is text without any images"
+        self.assertListEqual(
+            extract_markdown_images(text),
+            []
+        )
+
+
+    # TEST LINKS #
+    def test_extract_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        self.assertListEqual(
+            extract_markdown_links(text),
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("to youtube", "https://www.youtube.com/@bootdotdev")
+            ]
+        )
+
+    def test_extract_links_with_image(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev). But I also wanted to share an image ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        self.assertListEqual(
+            extract_markdown_links(text),
+            [
+                ("to boot dev", "https://www.boot.dev"),
+                ("to youtube", "https://www.youtube.com/@bootdotdev")
+            ]
+        )
 
 if __name__ == "__main__":
     unittest.main()
