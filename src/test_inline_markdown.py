@@ -2,7 +2,13 @@ import unittest
 
 from textnode import TextNode, TextType
 
-from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
+from inline_markdown import(
+    split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+    split_nodes_images,
+    split_nodes_links
+)
 
 class TestInlineMarkdown(unittest.TestCase):
     def test_delimiter_bold(self):
@@ -68,7 +74,6 @@ class TestInlineMarkdown(unittest.TestCase):
             []
         )
 
-
     # TEST LINKS #
     def test_extract_links(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
@@ -87,6 +92,48 @@ class TestInlineMarkdown(unittest.TestCase):
             [
                 ("to boot dev", "https://www.boot.dev"),
                 ("to youtube", "https://www.youtube.com/@bootdotdev")
+            ]
+        )
+
+    def test_split_nodes_image(self):
+        node = TextNode("This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)", TextType.TEXT)
+        self.assertListEqual(
+            split_nodes_images([node]),
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg")
+            ]
+        )
+
+    def test_split_nodes_links(self):
+        node = TextNode("This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com)", TextType.TEXT)
+        self.assertListEqual(
+            split_nodes_links([node]),
+            [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("to youtube", TextType.LINK, "https://www.youtube.com")
+            ]
+        )
+
+    def test_split_nodes_no_links(self):
+        node = TextNode("This is a text with no links.", TextType.TEXT)
+        self.assertListEqual(
+            split_nodes_links([node]),
+            [
+                TextNode("This is a text with no links.", TextType.TEXT)
+            ]
+        )
+
+    def test_split_nodes_malformed(self):
+        node = TextNode("Here's an [invalid link(no closing bracket) and some text", TextType.TEXT)
+        self.assertListEqual(
+            split_nodes_links([node]),
+            [
+                TextNode("Here's an [invalid link(no closing bracket) and some text", TextType.TEXT)
             ]
         )
 
