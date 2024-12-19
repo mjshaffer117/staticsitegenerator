@@ -6,6 +6,7 @@ from inline_markdown import(
     split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
+    text_to_textnode,
     split_nodes_images,
     split_nodes_links
 )
@@ -20,7 +21,7 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode("bolded", TextType.BOLD),
                 TextNode(" word", TextType.TEXT),
             ],
-            new_nodes,
+            new_nodes
         )
 
     def test_delimiter_bold_double(self):
@@ -35,7 +36,7 @@ class TestInlineMarkdown(unittest.TestCase):
                 TextNode(" word and ", TextType.TEXT),
                 TextNode("another", TextType.BOLD),
             ],
-            new_nodes,
+            new_nodes
         )
 
     def test_delimiter_bold_and_italic(self):
@@ -134,6 +135,25 @@ class TestInlineMarkdown(unittest.TestCase):
             split_nodes_links([node]),
             [
                 TextNode("Here's an [invalid link(no closing bracket) and some text", TextType.TEXT)
+            ]
+        )
+
+    # TEST TEXT TO TEXTNODE #
+    def test_text_to_textnode(self):
+        nodes = text_to_textnode("This is **text** with an *italic* word and a `code block` and an ![image](https://i.imgur.com/zjjcJKZ.png) and a [link](https://boot.dev)")
+        self.assertListEqual(
+            nodes,
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://boot.dev")
             ]
         )
 
