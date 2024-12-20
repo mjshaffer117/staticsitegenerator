@@ -38,6 +38,6 @@ This is the same paragraph on a new line
 
         block = "1. list\n2. items"
         self.assertEqual(block_to_blocktype(block), "ordered_list")
-
-        block = "paragraph"
+        
+        block = "paragraph\n1. paragraph"
         self.assertEqual(block_to_blocktype(block), "paragraph")
