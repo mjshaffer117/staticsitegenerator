@@ -127,7 +127,7 @@ class TestHTMLNode(unittest.TestCase):
             "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>"
         )
 
-    def test_parentnod_grandchildren(self):
+    def test_parentnode_grandchildren(self):
         grandchild_node = LeafNode("i", "Grandchild node")
         child_node = ParentNode("span", [grandchild_node])
         parent_node = ParentNode("div", [child_node])
