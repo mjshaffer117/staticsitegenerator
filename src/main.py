@@ -1,7 +1,7 @@
 import os, shutil
 
 from copy_static import copy_files
-from generate_page import generate_page
+from generate_page import generate_page, generate_pages
 
 source = "./static"
 destination = "./public"
@@ -17,10 +17,10 @@ def main():
     copy_files(source, destination)
 
     print("Generating page...")
-    generate_page(
-        os.path.join(content, "index.md"),
+    generate_pages(
+        content,
         template,
-        os.path.join(destination, "index.html")
+        destination
     )
 
 if __name__ == "__main__":

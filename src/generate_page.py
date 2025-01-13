@@ -30,3 +30,16 @@ def generate_page(source_path, template_path, target_path):
     os.makedirs(os.path.dirname(target_path), exist_ok=True)
     with open(target_path, 'w') as file:
         file.write(template)
+
+def generate_pages(content_path, template_path, target_path):
+    for filename in os.listdir(content_path):
+        print(f" * Generating -> {filename}")
+        file_path = os.path.join(content_path, filename)
+        target = os.path.join(target_path, filename)
+        if os.path.isfile(file_path) and file_path.endswith(".md"):
+            target = target.replace(".md", ".html")
+            generate_page(file_path, template_path, target)
+        else:
+            if not os.path.exists(target):
+                os.mkdir(target)
+            generate_pages(file_path, template_path, target)
