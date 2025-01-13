@@ -67,7 +67,12 @@ def quote_to_html_node(block):
 
 def unordered_list_to_html_node(block):
     # EACH LISTED ITEM <LI>
-    items = [line.lstrip('* -').strip() for line in block.split('\n') if line.strip()]
+    items = [
+        line[2:].strip() if (line.startswith('- ') or line.startswith('* '))
+        else line.strip()
+        for line in block.split('\n')
+        if line.strip()
+    ]
     list_items = [ParentNode("li", text_to_children(item)) for item in items]
     return ParentNode("ul", list_items)
 
